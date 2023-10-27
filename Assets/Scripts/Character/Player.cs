@@ -8,11 +8,13 @@ public class Player : Emity
     private float ho;
     private float ve;
 
-
+    Animator anim;
     Rigidbody rb;
+    bool animator;
     private void Awake()
     {
         rb = GetComponent<Rigidbody>();
+        anim= GetComponent<Animator>();
     }
     protected override void Start()
     {
@@ -23,23 +25,28 @@ public class Player : Emity
     void Update()
     {
         Vector3 dir = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical"));
-        //LookMouse();
+        LookMouse();
         if (dir != Vector3.zero)
         {
+            anim.SetBool("Run", true);
             MoveInput(dir);
-        }
+        }else
+        { anim.SetBool("Run", false); }
+
     }
     void MoveInput(Vector3 dirMove)
     {
         agent.Move(dirMove * speed * Time.deltaTime);
     }
-    //void LookMouse()
-    //{
-    //    Vector3 mousePos=Camera.main.ScreenToWorldPoint(Input.mousePosition);
-    //    Vector3 dir= mousePos- transform.position;
-    //    dir.Normalize();
-    //    float angle=Mathf.Atan2(dir.x,dir.y)*Mathf.Rad2Deg;
-    //    transform.rotation=Quaternion.Euler(0,0,angle);
+    void LookMouse()
+    {
+        RaycastHit hit;
+        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+        if (Physics.Raycast(ray, out hit))
+        {
+            transform.LookAt(new Vector3(hit.point.x, transform.position.y, hit.point.z));
+        }
+    }
+ 
 
-    //}
 }
